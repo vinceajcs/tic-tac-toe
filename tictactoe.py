@@ -32,7 +32,7 @@ def get_player_move(board):
     return move
 
 
-def get_cpu_move(board, cpu):  # TODO - add fork opportunities
+def get_cpu_move(board, cpu):
     # check if cpu can win with next move
     for i in range(1, 10):
         if board[i] == ' ' and test_win_move(board, i, cpu):
@@ -42,6 +42,18 @@ def get_cpu_move(board, cpu):  # TODO - add fork opportunities
     player = 'X' if cpu == 'O' else 'O'
     for i in range(1, 10):
         if board[i] == ' ' and test_win_move(board, i, player):
+            return i
+
+    # NOTE: fork opportunities are moves that give the cpu two possible moves to win
+
+    # check cpu fork opportunities
+    for i in range(1, 10):
+        if board[i] == ' ' and test_fork_move(board, i, cpu):
+            return i
+
+    # check player fork opportunities
+    for i in range(1, 10):
+        if board[i] == ' ' and test_fork_move(board, i, player):
             return i
 
     # take free corner
@@ -91,6 +103,19 @@ def test_win_move(board, move, mark):
     board_copy = board.copy()
     board_copy[move] = mark
     return is_winner(board_copy, mark)
+
+
+def test_fork_move(board, move, mark):
+    board_copy = board.copy()
+    board_copy[move] = mark
+
+    winning_moves = 0
+
+    for i in range(1, 10):
+        if test_win_move(board_copy, i, mark) and board_copy[i] == ' ':
+            winning_moves += 1
+
+    return winning_moves >= 2
 
 
 def main():
